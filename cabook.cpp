@@ -2,10 +2,13 @@
 #include <fstream>
 #include <ctime>
 #include <string>
+#include<vector>
+#include <sstream>
 using namespace std;
 const string admin_pass="root123";
 struct node{
     int data;
+    int id;
     node *next=NULL;
     node(int x){
         data=x;
@@ -215,8 +218,8 @@ public:
         x->right = y;
         y->left = T2;
 
-        y->height = 1 + std::max(getHeight(y->left), getHeight(y->right));
-        x->height = 1 + std::max(getHeight(x->left), getHeight(x->right));
+        y->height = 1 + max(getHeight(y->left), getHeight(y->right));
+        x->height = 1 + max(getHeight(x->left), getHeight(x->right));
 
         return x;
     }
@@ -228,8 +231,8 @@ public:
         y->left = x;
         x->right = T2;
 
-        x->height = 1 + std::max(getHeight(x->left), getHeight(x->right));
-        y->height = 1 + std::max(getHeight(y->left), getHeight(y->right));
+        x->height = 1 + max(getHeight(x->left), getHeight(x->right));
+        y->height = 1 + max(getHeight(y->left), getHeight(y->right));
 
         return y;
     }
@@ -371,10 +374,10 @@ class book {
 public:
 int generateid() {
     int id;
-    std::fstream file("Booking_ids", std::ios::in | std::ios::out | std::ios::app);
+    fstream file("Booking_ids", ios::in | ios::out | ios::app);
 
     if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;
+        cerr << "Error opening file!" << std::endl;
         return -1;
     }
 
@@ -418,14 +421,9 @@ int generateid() {
 
         string line;
         while (getline(reader, line)) {
-            if (line.find("Account Name: " + accountName) != string::npos) {
+            if (line.find(accountName) != string::npos) {
                 // Display the booking information for the user
                 cout << line << endl;
-                for (int i = 0; i < 3; ++i) {
-                    getline(reader, line);
-                    cout << line << endl;
-                }
-                cout << endl;
             }
         }
 
@@ -582,8 +580,9 @@ class Linkedlist {
     Linkedlist() { 
         head = NULL; }
 
-    void insertNode(int data){
+    void insertNode(int data,int d){
     node* newNode = new node(data);
+    newNode->id=d;
     if (head == NULL) {
         head = newNode;
         return;
@@ -595,122 +594,212 @@ class Linkedlist {
         temp->next = newNode;
     }
 
-    node* getTail(node* curNode) {
+    node *getTail(node *curNode) {
         while (curNode != nullptr && curNode->next != nullptr) {
             curNode = curNode->next;
         }
         return curNode;
     }
 
-    // Function to swap nodes of the linked list
-    node* partition(node* low, node* high, node** newLow, node** newHigh) {
+    node *partition(node *low, node *high, node **newLow, node **newHigh) {
         int pivot = high->data;
-        node* i = nullptr;
+        node *i = nullptr;
 
-        for (node* j = low; j != high; j = j->next) {
+        for (node *j = low; j != high; j = j->next) {
             if (j->data <= pivot) {
-                i = (i == nullptr) ? low : i->next;
-                std::swap(i->data, j->data);
+                if (i == nullptr) {
+                    i = low;
+                } else {
+                    i = i->next;
+                }
+                swap(i->data, j->data);
             }
         }
 
-        i = (i == nullptr) ? low : i->next;
-        std::swap(i->data, high->data);
+        if (i == nullptr) {
+            i = low;
+        } else {
+            i = i->next;
+        }
+        swap(i->data, high->data);
 
-        *newLow = (i == nullptr) ? low : i;
+        if (i == nullptr) {
+            *newLow = low;
+        } else {
+            *newLow = i;
+        }
         *newHigh = i;
 
         return i;
     }
 
-    // Function to perform quicksort on the linked list
-    void quicksort(node* low, node* high) {
+    void quicksortUtil(node *low, node *high) {
         if (high != nullptr && low != high && low != high->next) {
-            node* newLow = nullptr;
-            node* newHigh = nullptr;
-            node* pivot = partition(low, high, &newLow, &newHigh);
+            node *newLow = nullptr;
+            node *newHigh = nullptr;
+            node *pivot = partition(low, high, &newLow, &newHigh);
 
             if (newLow != nullptr && newLow != pivot) {
-                quicksort(newLow, pivot->next);
+                quicksortUtil(newLow, pivot);
             }
 
             if (newHigh != nullptr && newHigh != pivot) {
-                quicksort(pivot->next, high);
+                quicksortUtil(pivot->next, newHigh);
             }
         }
     }
 
-    // Function to call quicksort on the entire linked list
-    void sort() {
+    void quicksort() {
         head = getTail(head);
-        quicksort(head, nullptr);
+        quicksortUtil(head, nullptr);
     }
-    void printList(){
+
+    void printlist(){
         node *ptr;
         ptr=head;
+        cout<<"Bus No. -"<<"Fare";
         while(ptr!=NULL){
-            cout<<ptr->data<<" ";
+            cout<<ptr->id<<" "<<ptr->data<<" ";
             ptr=ptr->next;
         }
         cout<<endl;
     }
 };
+
 class routes{
     public:
-    void showroutes();
+    void getroute(){
+        ifstream file("routes");
 
-};
-// fix code from here
-class queued{
-    public:
-    node *head=NULL;
-    void enque(int x){
-        node *newnode=new node(x);
-        if(head==NULL){
-            head=newnode;
+        if (!file.is_open()) {
+            cerr << "Error opening file\n";
             return;
         }
-        newnode->next=head;
-        head=newnode;
-        
+
+        string line;
+        cout << "Routes:\n";
+        cout << "RouteNo     BusNo    From    To    Duration(hr)    Fare(Rs)\n";
+        while (getline(file, line)) {
+            cout << line << "\n";
+        }
+
+        file.close();
     }
-    void deque(){
-        node *temp=head;
-        head=head->next;
+void sortroutefare(int rn) {
+        fstream reader("routes");
+
+        if (!reader) {
+            cerr << "Error opening file\n";
+            return;
+        }
+        int routeno,busno,duration,fare;
+        string from,to;
+        Linkedlist l1;
+        while(reader>>routeno>>busno>>from>>to>>duration>>fare){
+            if(routeno==rn){
+                l1.insertNode(fare,busno);
+            }
+        }
+        l1.quicksort();
+        l1.printlist();
+        reader.close();
+    }
+    void sortrouteduration(int rn){
+        fstream reader("routes");
+
+        if (!reader) {
+            cerr << "Error opening file\n";
+            return;
+        }
+        int routeno,busno,duration,fare;
+        string from,to;
+        Linkedlist l1;
+        while(reader>>routeno>>busno>>from>>to>>duration>>fare){
+            if(routeno==rn){
+                l1.insertNode(duration,busno);
+            }
+        }
+        l1.quicksort();
+        l1.printlist();
+        reader.close();
+    }//according to duration
+};
+// fix code from here
+
+//make file for routes
+//make empty file for id 
+struct NODE {
+    int data;
+    NODE *next = NULL;
+
+    NODE(int x) {
+        data = x;
+    }
+};
+
+class queued {
+public:
+    NODE *head = NULL;
+
+    void enque(int x) {
+        NODE *newnode = new NODE(x);
+        if (head == NULL) {
+            head = newnode;
+            return;
+        }
+        newnode->next = head;
+        head = newnode;
+    }
+
+    void deque() {
+        if (head == NULL) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+        NODE *temp = head;
+        head = head->next;
         delete temp;
     }
-    int front(){return head->data;}
-    bool isempty(){
-        return (head==NULL);
-    }
-    void display(){
-        node *curr=head;
-        while(curr!=NULL){
-            cout<<curr->data<<" ";
-            curr=curr->next;
+
+    int front() {
+        if (head == NULL) {
+            cout << "Queue is empty.\n";
+            return -1;
         }
-        cout<<endl;
+        return head->data;
     }
-};  
 
-class payment{
+    bool isempty() {
+        return (head == NULL);
+    }
 
+    void display() {
+        NODE *curr = head;
+        while (curr != NULL) {
+            cout << curr->data << " ";
+            curr = curr->next;
+        }
+        cout << endl;
+    }
+};
+
+class payment {
 public:
-    void queuePayment(string accountName, double amount) {
-        ofstream writer("PaymentQueue", ios::out | ios::app);
+    void queuePayment(const string& firstname, const string& lastname, int busno, int seatno, const string& mobile, const string& email) {
+        ofstream writer("PaymentQueue.txt", ios::out | ios::app);
         if (writer) {
-            writer << accountName <<" "<< amount << "\n\n";
+            writer << firstname << " " << lastname << " " << busno << " " << seatno << " " << mobile << " " << email << "\n";
             writer.close();
             cout << "Payment request queued successfully.\n";
         } else {
-            cout << "Error opening 'PaymentQueue' file for writing.\n";
+            cout << "Error opening 'PaymentQueue.txt' file for writing.\n";
         }
     }
 
     void processPayments() {
-        ifstream reader("PaymentQueue");
+        ifstream reader("PaymentQueue.txt");
         if (!reader) {
-            cout << "Error opening 'PaymentQueue' file for reading.\n";
+            cout << "Error opening 'PaymentQueue.txt' file for reading.\n";
             return;
         }
 
@@ -718,10 +807,17 @@ public:
 
         string line;
         while (getline(reader, line)) {
-            if (line.find("Account Name: ") != string::npos) {
+            // Assuming the file format is "firstname lastname busno seatno mobile email"
+            string firstname, lastname, mobile, email;
+            int busno, seatno;
+
+            // Using stringstream to parse the line
+            stringstream ss(line);
+            if (ss >> firstname >> lastname >> busno >> seatno >> mobile >> email) {
                 // Enqueue payment request
-                paymentQueue.enque(stoi(line.substr(14)));
-                getline(reader, line); // Skip the "Amount" line
+                paymentQueue.enque(seatno);  // Assuming seatno is used as the payment identifier
+            } else {
+                cout << "Error parsing line: " << line << "\n";
             }
         }
 
@@ -730,8 +826,8 @@ public:
         // Process payment requests from the queue
         cout << "Processing payment requests...\n";
         while (!paymentQueue.isempty()) {
-            int accountNumber = paymentQueue.front();
-            cout << "Processing payment for Account Number: " << accountNumber << "\n";
+            int seatno = paymentQueue.front();
+            cout << "Processing payment for Seat Number: " << seatno << "\n";
             // Add your payment processing logic here
 
             // Dequeue processed payment request
@@ -739,6 +835,7 @@ public:
         }
     }
 };
+
 
 
 
