@@ -180,17 +180,228 @@ void deleteAccount() {
 
 };
 
+struct Node {
+    int data;
+    Node *left;
+    Node *right;
+    int height;
+    Node(int d) {
+        data = d;
+        left = right = NULL;
+        height = 1;
+        }
+};
+
+class BinaryTree {
+public:
+    Node *root;
+
+    int getHeight(Node *node) {
+        if (node == nullptr)
+            return 0;
+        return node->height;
+    }
+
+    int getBalanceFactor(Node *node) {
+        if (node == nullptr)
+            return 0;
+        return getHeight(node->left) - getHeight(node->right);
+    }
+
+    Node *rightRotate(Node *y) {
+        Node *x = y->left;
+        Node *T2 = x->right;
+
+        x->right = y;
+        y->left = T2;
+
+        y->height = 1 + std::max(getHeight(y->left), getHeight(y->right));
+        x->height = 1 + std::max(getHeight(x->left), getHeight(x->right));
+
+        return x;
+    }
+
+    Node *leftRotate(Node *x) {
+        Node *y = x->right;
+        Node *T2 = y->left;
+
+        y->left = x;
+        x->right = T2;
+
+        x->height = 1 + std::max(getHeight(x->left), getHeight(x->right));
+        y->height = 1 + std::max(getHeight(y->left), getHeight(y->right));
+
+        return y;
+    }
+
+    Node *balanceTree(Node *node, int data) {
+        int balance = getBalanceFactor(node);
+
+        if (balance > 1) {
+            if (data < node->left->data) // Left-Left case
+                return rightRotate(node);
+            if (data > node->left->data) // Left-Right case
+            {
+                node->left = leftRotate(node->left);
+                return rightRotate(node);
+            }
+        }
+        if (balance < -1) {
+            if (data > node->right->data) // Right-Right case
+                return leftRotate(node);
+            if (data < node->right->data) // Right-Left case
+            {
+                node->right = rightRotate(node->right);
+                return leftRotate(node);
+            }
+        }
+        return node;
+    }
+
+    Node *insert(Node *node, int data) {
+        if (node == nullptr)
+            return new Node(data);
+
+        if (data < node->data)
+            node->left = insert(node->left, data);
+        else if (data > node->data)
+            node->right = insert(node->right, data);
+
+        node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
+        return balanceTree(node, data);
+    }
+
+    Node *maxNode(Node *node) {
+        if (node->right == nullptr) {
+            return node;
+        }
+        return maxNode(node->right);
+    }
+
+    Node *deleteNode(Node *node, int x) {
+        if (node == nullptr)
+            return node;
+
+        if (x < node->data) {
+            node->left = deleteNode(node->left, x);
+        } else if (x > node->data) {
+            node->right = deleteNode(node->right, x);
+        } else {
+            if (node->left == nullptr || node->right == nullptr) {
+                Node *temp = node->left ? node->left : node->right;
+
+                if (temp == nullptr) {
+                    temp = node;
+                    node = nullptr;
+                } else {
+                    *node = *temp;
+                }
+
+                delete temp;
+            } else {
+                Node *temp = maxNode(node->left);
+                node->data = temp->data;
+                node->left = deleteNode(node->left, temp->data);
+            }
+        }
+
+        if (node == nullptr)
+            return node;
+
+        node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
+        return balanceTree(node, x);
+    }
+
+    void inorderTraversal(Node *node) {
+        if (node) {
+            inorderTraversal(node->left);
+            cout << node->data << " ";
+            inorderTraversal(node->right);
+        }
+    }
+    void readFromFile(const string& filename) {
+        ifstream file(filename);
+
+        if (!file.is_open()) {
+            cerr << "Error opening file " << filename << endl;
+            return;
+        }
+
+        int id;
+        while (file >> id) {
+            root = insert(root, id);
+        }
+
+        file.close();
+    }
+    void writeIntoFile(Node* node, ofstream& file) {
+        if (node) {
+            writeIntoFile(node->left, file);
+            file << node->data << " ";
+            writeIntoFile(node->right, file);
+        }
+    }
+
+    void writeToFile(const string& filename) {
+        ofstream file(filename);
+        if (!file.is_open()) {
+            cerr << "Error opening file " << filename << " for writing.\n";
+            return;
+        }
+
+        writeIntoFile(root, file);
+
+        file.close();
+        cout << "Data written to file successfully.\n";
+    }
+    Node *getmaxnode(Node *node){
+        if(node==NULL){
+            return node;
+        }
+        if(node->right==NULL){
+            return node;
+        }
+        return (node->right);
+    }
+};
+
 
 
 class book {
 public:
-    void makeBooking(string Name, int busNumber, int seatNumber) {
+int generateid() {
+    int id;
+    std::fstream file("Booking_ids", std::ios::in | std::ios::out | std::ios::app);
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return -1;
+    }
+
+    BinaryTree obj;
+    obj.readFromFile("Booking_ids");
+
+    if (obj.root == nullptr) {
+        // File is empty, set id to 1
+        id = 1;
+    } else {
+        Node *node = obj.root;
+        Node *maxi = obj.getmaxnode(node);
+        id = (maxi->data) + 1;
+    }
+
+    file.close();
+    return id;
+}
+
+
+    void makeBooking(int id,string Name, int busNumber, int seatNumber) {
         ofstream writer("Bookings", ios::out | ios::app);
         if (writer) {
             time_t now = time(0);
             tm *ltm = localtime(&now);
 
-            writer << Name << " "<<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << " "<< busNumber << " " << seatNumber << "\n";
+            writer << id << Name << " "<<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << " "<< busNumber << " " << seatNumber << "\n";
             writer.close();
             cout << "Booking successful.\n";
         } else {
@@ -365,7 +576,91 @@ private:
         writer.close();
     }
 };
+class Linkedlist {
+    node* head;
+    public:
+    Linkedlist() { 
+        head = NULL; }
 
+    void insertNode(int data){
+    node* newNode = new node(data);
+    if (head == NULL) {
+        head = newNode;
+        return;
+    }
+    node* temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+        temp->next = newNode;
+    }
+
+    node* getTail(node* curNode) {
+        while (curNode != nullptr && curNode->next != nullptr) {
+            curNode = curNode->next;
+        }
+        return curNode;
+    }
+
+    // Function to swap nodes of the linked list
+    node* partition(node* low, node* high, node** newLow, node** newHigh) {
+        int pivot = high->data;
+        node* i = nullptr;
+
+        for (node* j = low; j != high; j = j->next) {
+            if (j->data <= pivot) {
+                i = (i == nullptr) ? low : i->next;
+                std::swap(i->data, j->data);
+            }
+        }
+
+        i = (i == nullptr) ? low : i->next;
+        std::swap(i->data, high->data);
+
+        *newLow = (i == nullptr) ? low : i;
+        *newHigh = i;
+
+        return i;
+    }
+
+    // Function to perform quicksort on the linked list
+    void quicksort(node* low, node* high) {
+        if (high != nullptr && low != high && low != high->next) {
+            node* newLow = nullptr;
+            node* newHigh = nullptr;
+            node* pivot = partition(low, high, &newLow, &newHigh);
+
+            if (newLow != nullptr && newLow != pivot) {
+                quicksort(newLow, pivot->next);
+            }
+
+            if (newHigh != nullptr && newHigh != pivot) {
+                quicksort(pivot->next, high);
+            }
+        }
+    }
+
+    // Function to call quicksort on the entire linked list
+    void sort() {
+        head = getTail(head);
+        quicksort(head, nullptr);
+    }
+    void printList(){
+        node *ptr;
+        ptr=head;
+        while(ptr!=NULL){
+            cout<<ptr->data<<" ";
+            ptr=ptr->next;
+        }
+        cout<<endl;
+    }
+};
+class routes{
+    public:
+    void showroutes();
+
+};
+// fix code from here
 class queued{
     public:
     node *head=NULL;
@@ -404,8 +699,7 @@ public:
     void queuePayment(string accountName, double amount) {
         ofstream writer("PaymentQueue", ios::out | ios::app);
         if (writer) {
-            writer << "Account Name: " << accountName << "\n";
-            writer << "Amount: $" << amount << "\n\n";
+            writer << accountName <<" "<< amount << "\n\n";
             writer.close();
             cout << "Payment request queued successfully.\n";
         } else {
@@ -449,136 +743,7 @@ public:
 
 
 
-struct Node {
-    int data;
-    Node *left;
-    Node *right;
-    int height;
-    Node(int d) {
-        data = d;
-        left = right = NULL;
-        height = 1;
-    }
-};
 
-int getHeight(Node* root) {
-    if (root == nullptr)
-        return 0;
-    return root->height;
-}
-
-int getBalanceFactor(Node* root) {
-    if (root == nullptr)
-        return 0;
-    return getHeight(root->left) - getHeight(root->right);
-}
-
-Node* rightRotate(Node* y) {
-    Node* x = y->left;
-    Node* T2 = x->right;
-
-    x->right = y;
-    y->left = T2;
-
-    y->height = 1 + max(getHeight(y->left), getHeight(y->right));
-    x->height = 1 + max(getHeight(x->left), getHeight(x->right));
-
-    return x;
-}
-
-Node* leftRotate(Node* x) {
-    Node* y = x->right;
-    Node* T2 = y->left;
-
-    y->left = x;
-    x->right = T2;
-
-    x->height = 1 + max(getHeight(x->left), getHeight(x->right));
-    y->height = 1 + max(getHeight(y->left), getHeight(y->right));
-
-    return y;
-}
-Node *balancetree(Node *root,int data){
-     int balance = getBalanceFactor(root);
-
-    if (balance > 1) {
-        if (data < root->left->data) // Left-Left case
-            return rightRotate(root);
-        if (data > root->left->data) // Left-Right case
-        {
-            root->left = leftRotate(root->left);
-            return rightRotate(root);
-        }
-    }
-    if (balance < -1) {
-        if (data > root->right->data) // Right-Right case
-            return leftRotate(root);
-        if (data < root->right->data) // Right-Left case
-        {
-            root->right = rightRotate(root->right);
-            return leftRotate(root);
-        }
-    }
-    return root;
-}
-
-Node* insert(Node* root, int data) {
-    if (root == nullptr)
-        return new Node(data);
-
-    if (data < root->data)
-        root->left = insert(root->left, data);
-    else if (data > root->data)
-        root->right = insert(root->right, data);
-
-    root->height = 1 + max(getHeight(root->left), getHeight(root->right));
-    balancetree(root,data);
-    return root;
-}
-Node *maxNode(Node *root){
-    if(root->right==NULL){
-        return root;
-    }
-    maxNode(root->right);
-}
-Node* deleteNode(Node* root, int x) {
-    if (root == nullptr)
-        return root;
-
-    if (x < root->data) {
-        root->left = deleteNode(root->left, x);
-    } else if (x > root->data) {
-        root->right = deleteNode(root->right, x);
-    } else {
-        if (root->left == nullptr || root->right == nullptr) {
-            Node* temp = root->left ? root->left : root->right;
-
-            if (temp == nullptr) {
-                temp = root;
-                root = nullptr;
-            } else {
-                *root = *temp;
-            }
-
-            delete temp;
-        } else {
-            Node* temp = maxNode(root->left);
-            root->data = temp->data;
-            root->left = deleteNode(root->left, temp->data);
-        }
-    }
-
-    root->height = 1 + max(getHeight(root->left), getHeight(root->right));
-    return balancetree(root, x);
-}
-
-void inorderTraversal(Node* root) {
-    if (root) {
-        inorderTraversal(root->left);
-        cout << root->data << " ";
-        inorderTraversal(root->right);
-    }
-}
 int main(){
     cout<<"########## CABOOK ##########";
     category obj;
