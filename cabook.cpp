@@ -15,6 +15,7 @@ struct node{
     } 
 };
 class category{
+    // consist of the menus and stored info which is used just to display
     public:
     void user(){
         cout<<"\n\n1.Admin"<<endl;
@@ -45,6 +46,16 @@ class category{
         cout<<"2.Bus 2 : Delhi--->Punjab--->Chandigarh"<<endl;
     }
     void contact(){
+        cout<<"WELCOME TO SUPPORT ";
+            cout<<"please enter your complaint(we will get back to you shortly)=>"<<endl;
+            string h;
+            cin>>h;
+            ofstream writer;
+            writer.open("complaints",ios::out|ios::app);
+            writer<<h<<"\n";
+            writer.close();
+            //complaint will get written in the file 
+            cout<<"if the problem continues";
         cout<<"\nCONTACT DETAILS\n\n";
         cout<<"1.Email id: cabookhelp@gmail.com "<<endl;
         cout<<"2.Mobile no. 9988776600:"<<endl;
@@ -77,6 +88,7 @@ class accounts{
     string phone;
     string email;
 void signup(){
+    //stores the details of individual account with certain rules
     cout<<endl;
     cout<<"Enter your firstname : ";
     cin>>fname;
@@ -114,7 +126,7 @@ int login() {
 
     fstream reader;
     reader.open("Details", ios::in);
-
+    // checks the account at time of login and grants access if the vles matched
     string check_accountname, check_password, check_fname, check_lname ,check_email;
     string check_phone;
 
@@ -158,7 +170,7 @@ void deleteAccount() {
         cout << "Error opening files.\n";
         return;
     }
-
+    //removes the account from the text file
     string check_accountname, check_password, check_fname, check_lname, check_email, check_phone;
 
     while (inFile >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email) {
@@ -198,7 +210,7 @@ struct Node {
 class BinaryTree {
 public:
     Node *root;
-
+//binery tree class with all the functions 
     int getHeight(Node *node) {
         if (node == nullptr)
             return 0;
@@ -373,6 +385,7 @@ public:
 class book {
 public:
 int generateid() {
+//helps generate the booking id 
     int id;
     fstream file("Booking_ids", ios::in | ios::out | ios::app);
 
@@ -403,6 +416,7 @@ int generateid() {
         if (writer) {
             time_t now = time(0);
             tm *ltm = localtime(&now);
+//provides confirmation of the booking along with  the important information
 
             writer << id << Name << " "<<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << " "<< busNumber << " " << seatNumber << "\n";
             writer.close();
@@ -413,6 +427,7 @@ int generateid() {
     }
 
     void viewBookings(string accountName) {
+    // 
         ifstream reader("Bookings");
         if (!reader) {
             cout << "Error opening 'Bookings' file for reading.\n";
@@ -724,10 +739,10 @@ void sortroutefare(int rn) {
         reader.close();
     }//according to duration
 };
-// fix code from here
 
-//make file for routes
-//make empty file for id 
+
+
+
 struct NODE {
     int data;
     NODE *next = NULL;
@@ -887,6 +902,7 @@ int main(){
         cin>>choice;
         if(choice==1){
             obj.showroutes();
+            goto l2;
         }
         else if(choice==2){
             l3:
@@ -907,12 +923,19 @@ int main(){
                 goto l4;        
             }
             s.book(busno,seatno);
+
         }
         else if(choice==3){
-
+            cout << "Account Details:\n";
+                    cout << "Name: " << a.fname << " " << a.lname << endl;
+                    cout << "Account Name: " << a.accountname << endl;
+                    cout << "Phone: " << a.phone << endl;
+                    cout << "Email: " << a.email << endl;
+                    goto l2;
         }
         else if(choice==4){
-
+            obj.contact();
+            goto l2;
         }
         else if(choice==5){
             return 0;
