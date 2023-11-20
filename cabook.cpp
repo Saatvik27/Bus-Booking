@@ -43,22 +43,37 @@ class category{
     }
     void showroutes(){
         cout << "Routes:\n";
-        cout << "BusNo    From       To    Duration(hr)    Fare(Rs)\n";
-        cout<<"1       delhi     manali       5            2300\n";
-        cout<<"2       mumbai     pune        7            4600\n";
-        cout<<"3      lucknow    meerut       6            1800\n";
-        cout<<"4       meerut    kanpur       5            2400\n";
-        cout<<"5       cochin   banglore      7            3000\n";
-        cout<<"6       indore     pune        10           2800\n";
-        cout<<"7       mumbai     pune        8            3300\n";
-        cout<<"8        pune     nagpur       4            2100\n";
-        cout<<"9       meerut     agra        5            2900\n";
-        cout<<"10      mumbai     pune        6            2400\n";
-        cout<<"11      meerut    kanpur       9            2350\n";
-        cout<<"12      delhi     meerut       5            2200\n";
-        cout<<"13      delhi     manali       7            2100\n";
-        cout<<"14     varanasi  ghaziabad     10           2200\n";
-        cout<<"15      nagpur     pune        5            2400\n";
+        cout << "RouteNo    BusNo    From       To    Duration(hr)    Fare(Rs)\n";
+        cout<<"      1       1       delhi     manali       5            2300\n";
+        cout<<"      1       2       mumbai     pune        7            4600\n";
+        cout<<"      1       3      lucknow    meerut       6            1800\n";
+        cout<<"      1       4       meerut    kanpur       5            2400\n";
+        cout<<"      1       5       cochin   banglore      7            3000\n";
+        cout<<"      1       6       indore     pune        10           2800\n";
+        cout<<"      1       7       mumbai     pune        8            3300\n";
+        cout<<"      1       8        pune     nagpur       4            2100\n";
+        cout<<"      1       9       meerut     agra        5            2900\n";
+        cout<<"      1       10      mumbai     pune        6            2400\n";
+        cout<<"      1       11      meerut    kanpur       9            2350\n";
+        cout<<"      1       12      delhi     meerut       5            2200\n";
+        cout<<"      1       13      delhi     manali       7            2100\n";
+        cout<<"      1       14     varanasi  ghaziabad     10           2200\n";
+        cout<<"      1       15      nagpur     pune        5            2400\n";
+        cout<<"      1       1       delhi     manali       5            2300\n";
+        cout<<"      1       2       mumbai     pune        7            4600\n";
+        cout<<"      1       3      lucknow    meerut       6            1800\n";
+        cout<<"      1       4       meerut    kanpur       5            2400\n";
+        cout<<"      1       5       cochin   banglore      7            3000\n";
+        cout<<"      1       6       indore     pune        10           2800\n";
+        cout<<"      1       7       mumbai     pune        8            3300\n";
+        cout<<"      1       8        pune     nagpur       4            2100\n";
+        cout<<"      1       9       meerut     agra        5            2900\n";
+        cout<<"      1       10      mumbai     pune        6            2400\n";
+        cout<<"      1       11      meerut    kanpur       9            2350\n";
+        cout<<"      1       12      delhi     meerut       5            2200\n";
+        cout<<"      1       13      delhi     manali       7            2100\n";
+        cout<<"      1       14     varanasi  ghaziabad     10           2200\n";
+        cout<<"      1       15      nagpur     pune        5            2400\n";
         
     }
     void contact(){
@@ -505,28 +520,29 @@ public:
 class book {
 public:
 int generateid() {
-//helps generate the booking id 
     int id;
-    fstream file("Booking_ids", ios::in | ios::out | ios::app);
+    ifstream file("Booking_ids");
 
     if (!file.is_open()) {
         cerr << "Error opening file!" << std::endl;
         return -1;
     }
 
-    BinaryTree obj;
-    obj.readFromFile("Booking_ids");
-
-    if (obj.root == nullptr) {
-        // File is empty, set id to 1
-        id = 1;
-    } else {
-        Node *node = obj.root;
-        Node *maxi = obj.getmaxnode(node);
-        id = (maxi->data) + 1;
+    // Read the last ID from the file
+    while (file >> id) {
+        // Keep reading until the last ID is obtained
     }
 
+    // Increment the last ID to generate a new one
+    id++;
+
+    // Append the new ID to the file
+    ofstream outFile("Booking_ids", ios::app);
+    outFile << id << endl;
+
     file.close();
+    outFile.close();
+
     return id;
 }
 
@@ -538,7 +554,7 @@ int generateid() {
             tm *ltm = localtime(&now);
 //provides confirmation of the booking along with  the important information
 
-            writer << id << Name << " "<<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << " "<< busNumber << " " << seatNumber << "\n";
+            writer << id <<" "<< Name << " "<<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << " "<< busNumber << " " << seatNumber << "\n";
             writer.close();
             cout << "Booking successful.\n";
         } else {
@@ -554,11 +570,11 @@ int generateid() {
             return;
         }
 
-        string line;
-        while (getline(reader, line)) {
-            if (line.find(accountName) != string::npos) {
+        string id,name,date,bus,seat;
+        while (reader>>id>>name>>date>>bus>>seat) {
+            if (name==accountName) {
                 // Display the booking information for the user
-                cout << line << endl;
+                cout << id<<" " << name<<" " << date<<" "<<bus <<" "<<seat<< endl;
             }
         }
 
@@ -629,7 +645,7 @@ class seats {
                 cout << "Invalid bus number. Please enter a number between 0 and 14." << endl;
                 return;
             }
-            cout << "Booked Seats for Bus " << busNumber+1 << ": ";
+            cout << "Booked Seats for Bus " << busNumber << ": ";
             for (int i = 0; i < 30; i++) {
                 if (busSeats[busNumber][i] == "1") {
                     cout << i + 1 << " ";
@@ -656,7 +672,7 @@ class seats {
     void viewBusBookings() {
         // Display booked seats for all buses
         for (int i = 0; i < 15; i++) {
-            cout << "Booked Seats for Bus " << i+1 << ": ";
+            cout << "Booked Seats for Bus " << i << ": ";
             for (int j = 0; j < 30; j++) {
                 if (busSeats[i][j] == "1") {
                     cout << j + 1 << " ";
@@ -672,7 +688,7 @@ class seats {
         cin >> busNumber;
 
         // Display booked seats for the specified bus
-        cout << "Booked Seats for Bus " << busNumber+1 << ": ";
+        cout << "Booked Seats for Bus " << busNumber << ": ";
         for (int i = 0; i < 30; i++) {
             if (busSeats[busNumber][i] == "1") {
                 cout << i + 1 << " ";
@@ -865,50 +881,57 @@ void sortroutefare(int rn) {
 void payment(int busnumber) {
     int choice;
 
-        // Display menu options
-        cout << "\n#######payment window opening#######\n";
-        cout << "1. Bank Transfer\n";
-        cout << "2. UPI\n";
-        cout << "Enter your choice=";
-        cin >> choice;
+    // Display menu options
+    cout << "\n#######payment window opening#######\n";
+    cout << "1. Bank Transfer\n";
+    cout << "2. UPI\n";
+    cout << "Enter your choice=";
+    cin >> choice;
 
-        // Process user choice
-        if (choice==1){
-                cout << "Option 1: Bank Transfer selected.\n";
-                int x,y,z;
-                string d;
-                cout<<"enter bank acc no.=>\n";
-                cin>>x;
-                cout<<"enter pin=>\n";
-                cin>>y;
-                cout<<"enter expiry=>\n";
-                cin>>z;
-                cout<<"enter date=>\n";
-                cin>>d;
-            }
-       else{
-                cout << "Option 2: UPI selected.\n";
-                int x;
-                cout<<"enter phone no.=>\n";
-                cin>>x;
+    // Process user choice
+    if (choice == 1) {
+        cout << "Option 1: Bank Transfer selected.\n";
+        int x, y, z;
+        string d;
+        cout << "Enter bank acc no.=>\n";
+        cin >> x;
+        cout << "Enter pin=>\n";
+        cin >> y;
+        cout << "Enter expiry=>\n";
+        cin >> z;
+        cout << "Enter date=>\n";
+        cin >> d;
+    } else {
+        cout << "Option 2: UPI selected.\n";
+        string x;
+        cout << "Enter phone no.=>\n";
+        cin >> x;
+        if (x.length() != 10) {
+            cout << "Phone number length should be 10 digits.\n";
+            return;
         }
-        cout<<"Amt to be paid=";
-        ifstream reader("routes");
-        string routeno,busno,source,destination,duration,fare;
-        while(reader>>routeno>>busno>>source>>destination>>duration>>fare){
-            if(stoi(busno)==busnumber){
-                cout<<fare<<"\n";
-            }
+    }
+
+    ifstream reader("routes");
+    string routeno, busno, source, destination, duration, fare;
+
+    while (reader >> routeno >> busno >> source >> destination >> duration >> fare) {
+        if (stoi(busno) == busnumber) {
+            cout << "Amt to be paid=" << fare << "\n";
+            break; // Break after finding the correct bus route
         }
-        cout<<"confirm the payment(y/n)=>";
-        char t;
-        cin>> t;
-        if (t=='y' || t=='Y'){
-            cout<<"payment successful\n";
-        }
-        else{
-            cout<<"payment cancelled\n";
-        }
+    }
+
+    reader.close();
+
+    cout << "Confirm the payment (y/n)=>";
+    char t;
+    cin >> t;
+    if (t == 'y' || t == 'Y') {
+        cout << "Payment successful\n";
+    } else {
+        cout << "Payment cancelled\n";
+    }
 }
 
 
@@ -988,7 +1011,7 @@ int main(){
             l3:
             cout<<"Enter bus number :";
             cin>>busno;
-            if(busno<1 || busno>10){
+            if(busno<1 || busno>15){
                 cout<<"\nEnter correct bus number.";
                 goto l3;        
             }
@@ -1003,7 +1026,7 @@ int main(){
                 goto l4;        
             }
             s.book(busno,seatno);
-            b.makeBooking(b.generateid(),a.fname,busno,seatno);
+            b.makeBooking(b.generateid(),a.accountname,busno,seatno);
             payment(busno);
             goto l2;
 
