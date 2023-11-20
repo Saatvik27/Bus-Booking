@@ -39,41 +39,42 @@ class category{
         cout<<"3.Your Account"<<endl;
         cout<<"4.Support"<<endl;
         cout<<"5.view boooking"<<endl;
-        cout<<"6.Exit\n"<<endl;
+        cout<<"6.sort routes"<<endl;
+        cout<<"7.Exit\n"<<endl;
     }
     void showroutes(){
         cout << "Routes:\n";
         cout << "RouteNo    BusNo    From       To    Duration(hr)    Fare(Rs)\n";
         cout<<"      1       1       delhi     manali       5            2300\n";
-        cout<<"      1       2       mumbai     pune        7            4600\n";
-        cout<<"      1       3      lucknow    meerut       6            1800\n";
-        cout<<"      1       4       meerut    kanpur       5            2400\n";
-        cout<<"      1       5       cochin   banglore      7            3000\n";
-        cout<<"      1       6       indore     pune        10           2800\n";
-        cout<<"      1       7       mumbai     pune        8            3300\n";
-        cout<<"      1       8        pune     nagpur       4            2100\n";
-        cout<<"      1       9       meerut     agra        5            2900\n";
-        cout<<"      1       10      mumbai     pune        6            2400\n";
-        cout<<"      1       11      meerut    kanpur       9            2350\n";
-        cout<<"      1       12      delhi     meerut       5            2200\n";
-        cout<<"      1       13      delhi     manali       7            2100\n";
-        cout<<"      1       14     varanasi  ghaziabad     10           2200\n";
-        cout<<"      1       15      nagpur     pune        5            2400\n";
-        cout<<"      1       1       delhi     manali       5            2300\n";
-        cout<<"      1       2       mumbai     pune        7            4600\n";
-        cout<<"      1       3      lucknow    meerut       6            1800\n";
-        cout<<"      1       4       meerut    kanpur       5            2400\n";
-        cout<<"      1       5       cochin   banglore      7            3000\n";
-        cout<<"      1       6       indore     pune        10           2800\n";
-        cout<<"      1       7       mumbai     pune        8            3300\n";
-        cout<<"      1       8        pune     nagpur       4            2100\n";
-        cout<<"      1       9       meerut     agra        5            2900\n";
-        cout<<"      1       10      mumbai     pune        6            2400\n";
-        cout<<"      1       11      meerut    kanpur       9            2350\n";
-        cout<<"      1       12      delhi     meerut       5            2200\n";
-        cout<<"      1       13      delhi     manali       7            2100\n";
-        cout<<"      1       14     varanasi  ghaziabad     10           2200\n";
-        cout<<"      1       15      nagpur     pune        5            2400\n";
+        cout<<"      2       2       mumbai     pune        7            4600\n";
+        cout<<"      3       3      lucknow    meerut       6            1800\n";
+        cout<<"      4       4       meerut    kanpur       5            2400\n";
+        cout<<"      5       5       cochin   banglore      7            3000\n";
+        cout<<"      6       6       indore     pune        10           2800\n";
+        cout<<"      7       7       mumbai     pune        8            3300\n";
+        cout<<"      8       8        pune     nagpur       4            2100\n";
+        cout<<"      9       9       meerut     agra        5            2900\n";
+        cout<<"      10       10      mumbai     pune        6            2400\n";
+        cout<<"      11       11      meerut    kanpur       9            2350\n";
+        cout<<"      12       12      delhi     meerut       5            2200\n";
+        cout<<"      13       13      delhi     manali       7            2100\n";
+        cout<<"      14       14     varanasi  ghaziabad     10           2200\n";
+        cout<<"      15       15      nagpur     pune        5            2400\n";
+        cout<<"      16      1       delhi     manali       5            2300\n";
+        cout<<"      17      2       mumbai     pune        7            4600\n";
+        cout<<"      18      3      lucknow    meerut       6            1800\n";
+        cout<<"      19      4       meerut    kanpur       5            2400\n";
+        cout<<"      20      5       cochin   banglore      7            3000\n";
+        cout<<"      21      6       indore     pune        10           2800\n";
+        cout<<"      22      7       mumbai     pune        8            3300\n";
+        cout<<"      23      8        pune     nagpur       4            2100\n";
+        cout<<"      24      9       meerut     agra        5            2900\n";
+        cout<<"      25      10      mumbai     pune        6            2400\n";
+        cout<<"      26      11      meerut    kanpur       9            2350\n";
+        cout<<"      27      12      delhi     meerut       5            2200\n";
+        cout<<"      28      13      delhi     manali       7            2100\n";
+        cout<<"      29      14     varanasi  ghaziabad     10           2200\n";
+        cout<<"      30      15      nagpur     pune        5            2400\n";
         
     }
     void contact(){
@@ -345,7 +346,7 @@ struct Node {
 class BinaryTree {
 public:
     Node *root;
-//binery tree class with all the functions 
+//binary tree class with all the functions 
     int getHeight(Node *node) {
         if (node == nullptr)
             return 0;
@@ -809,7 +810,7 @@ class Linkedlist {
     void printlist(){
         node *ptr;
         ptr=head;
-        cout<<"Bus No. -"<<"Fare";
+        cout<<"Bus No. -"<<" ";
         while(ptr!=NULL){
             cout<<ptr->id<<" "<<ptr->data<<" ";
             ptr=ptr->next;
@@ -838,7 +839,7 @@ class routes{
         file.close();
     }
 void sortroutefare(int rn) {
-        fstream reader("routes");
+        ifstream reader("routes");
 
         if (!reader) {
             cerr << "Error opening file\n";
@@ -857,7 +858,7 @@ void sortroutefare(int rn) {
         reader.close();
     }
     void sortrouteduration(int rn){
-        fstream reader("routes");
+        ifstream reader("routes");
 
         if (!reader) {
             cerr << "Error opening file\n";
@@ -1050,6 +1051,20 @@ int main(){
         }
         
         else if(choice==6){
+            cout<<"1. sort by distance"<<endl<<"2. sort by price"<<endl;
+            int ch,rno;
+            cin>>ch;
+            cout<<"enter route no=>";
+            cin>>rno;
+            if (ch==2){
+                r.sortroutefare(rno);
+            }
+            else{
+                r.sortrouteduration(rno);
+            }
+            goto l2;
+        }
+        else if(choice==7){
             return 0;
         }
         else{
