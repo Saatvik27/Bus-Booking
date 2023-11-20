@@ -1,15 +1,30 @@
-1 delhi manali 5 2300
-2 mumbai pune 7 4600
-3 lucknow meerut 6 1800
-4 meerut kanpur 5 2400
-5 cochin banglore 7 3000
-6 indore pune 10 2800
-7 mumbai pune 8 3300
-8 pune nagpur 4 2100
-9 meerut agra 5 2900
-10 mumbai pune 6 2400
-11 meerut kanpur 9 2350
-12 delhi meerut 5 2200
-13 delhi manali 7 2100
-14 varanasi ghaziabad 10 2200
-15 nagpur pune 5 2400
+1 1 delhi manali 5 2300
+1 2 mumbai pune 7 4600
+1 3 lucknow meerut 6 1800
+1 4 meerut kanpur 5 2400
+1 5 cochin banglore 7 3000
+1 6 indore pune 10 2800
+1 7 mumbai pune 8 3300
+1 8 pune nagpur 4 2100
+1 9 meerut agra 5 2900
+1 10 mumbai pune 6 2400
+1 11 meerut kanpur 9 2350
+1 12 delhi meerut 5 2200
+1 13 delhi manali 7 2100
+1 14 varanasi ghaziabad 10 2200
+1 15 nagpur pune 5 2400
+1 1 delhi manali 5 2300
+1 2 mumbai pune 7 4600
+1 3 lucknow meerut 6 1800
+1 4 meerut kanpur 5 2400
+1 5 cochin banglore 7 3000
+1 6 indore pune 10 2800
+1 7 mumbai pune 8 3300
+1 8 pune nagpur 4 2100
+1 9 meerut agra 5 2900
+1 10 mumbai pune 6 2400
+1 11 meerut kanpur 9 2350
+1 12 delhi meerut 5 2200
+1 13 delhi manali 7 2100
+1 14 varanasi ghaziabad 10 2200
+1 15 nagpur pune 5 2400

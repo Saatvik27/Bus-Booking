@@ -862,7 +862,7 @@ void sortroutefare(int rn) {
 };
 
 
-void payment() {
+void payment(int busnumber) {
     int choice;
 
         // Display menu options
@@ -875,21 +875,31 @@ void payment() {
         // Process user choice
         if (choice==1){
                 cout << "Option 1: Bank Transfer selected.\n";
-                int x,y;
+                int x,y,z;
+                string d;
                 cout<<"enter bank acc no.=>\n";
                 cin>>x;
                 cout<<"enter pin=>\n";
                 cin>>y;
+                cout<<"enter expiry=>\n";
+                cin>>z;
+                cout<<"enter date=>\n";
+                cin>>d;
             }
        else{
                 cout << "Option 2: UPI selected.\n";
-                int x,y;
+                int x;
                 cout<<"enter phone no.=>\n";
                 cin>>x;
-                cout<<"enter pin=>\n";
-                cin>>y;
         }
-        cout<<"amt to be paid=2300\n";
+        cout<<"Amt to be paid=";
+        ifstream reader("routes");
+        string routeno,busno,source,destination,duration,fare;
+        while(reader>>routeno>>busno>>source>>destination>>duration>>fare){
+            if(stoi(busno)==busnumber){
+                cout<<fare<<"\n";
+            }
+        }
         cout<<"confirm the payment(y/n)=>";
         char t;
         cin>> t;
@@ -994,7 +1004,7 @@ int main(){
             }
             s.book(busno,seatno);
             b.makeBooking(b.generateid(),a.fname,busno,seatno);
-            payment();
+            payment(busno);
             goto l2;
 
         }
