@@ -956,14 +956,14 @@ int main(){
             s.available(busno);
             cout<<"Enter seat number :";
             cin>>seatno;
-            if(seatno<1 || seatno>30){
-                cout<<"\nEnter correct seat number.";
-                goto l4;        
+            if(s.book(busno,seatno)){
+                b.makeBooking(b.generateid(),a.accountname,busno,seatno);
+                payment(busno);
+                goto l2;
             }
-            s.book(busno,seatno);
-            b.makeBooking(b.generateid(),a.accountname,busno,seatno);
-            payment(busno);
-            goto l2;
+            else{
+                goto l4;
+            }
 
         }
         else if(choice==3){
