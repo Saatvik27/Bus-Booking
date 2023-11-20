@@ -77,124 +77,215 @@ class category{
         cout<<"2.UPI"<<endl;
     }
 };
+const int TABLE_SIZE = 128;
+class HashNode {
+public:
+    string key;
+    int value;
+    HashNode* next;
+    HashNode(string key, int value) {
+        this->key = key;
+        this->value = value;
+        this->next = NULL;
+    }
+};
 
+class HashTable {
+private:
+    HashNode** table;
 
-class accounts{
-    public:
+public:
+    HashTable() {
+        table = new HashNode*[TABLE_SIZE]();
+    }
+
+    int hashFunction(string key) {
+        int hash = 0;
+        for (int i = 0; i < key.length(); i++) {
+            hash = (hash + (int)key[i]) % TABLE_SIZE;
+        }
+        return hash;
+    }
+
+    void insert(string key, int value) {
+        int hash = hashFunction(key);
+        if (!table[hash]) {
+            table[hash] = new HashNode(key, value);
+        } else {
+            HashNode* entry = table[hash];
+            while (entry->next) {
+                entry = entry->next;
+            }
+            entry->next = new HashNode(key, value);
+        }
+    }
+
+    int search(string key) {
+        int hash = hashFunction(key);
+        if (table[hash]) {
+            HashNode* entry = table[hash];
+            while (entry) {
+                if (entry->key == key) {
+                    return entry->value;
+                }
+                entry = entry->next;
+            }
+        }
+        return -1;
+    }
+};
+
+class accounts {
+private:
+    HashTable passwordTable;
+    string accountname;
+    string password;
     string fname;
     string lname;
-    string  accountname;
-    string password;
     string phone;
     string email;
-void signup(){
-    //stores the details of individual account with certain rules
-    cout<<endl;
-    cout<<"Enter your firstname : ";
-    cin>>fname;
-    cout<<"Enter your lastname : ";
-    cin>>lname;
-    cout<<"Enter Account Name : ";
-    cin>>accountname;
-    cout<<"Enter Password : ";
-    cin>>password;
-    do{
-        cout<<"Enter your phone number (10 digits only): ";
-        cin>>phone;
-        if(phone.length() != 10){
-            cout<<"Invalid phone number. Please try again."<<endl;
+
+public:
+    accounts(){
+        ifstream reader("Passwords",ios::in);
+        string account,pass;
+        while(reader>>account>>pass){
+            passwordTable.insert(account,stoi(pass));
         }
-    }while(phone.length() != 10);
-    cout<<"Enter your email id : ";
-    cin>>email;
-    ofstream writer;
-    writer.open("Details",ios::out|ios::app);
-    writer<<accountname<<" "<<password<<" "<<fname<<" "<<lname<<" "<<phone<<" "<<email<<"\n";
-    writer.close();
-}
+        reader.close();
+    }
+    void signup() {
+        cout << endl;
+        cout << "Enter your firstname : ";
+        cin >> fname;
+        cout << "Enter your lastname : ";
+        cin >> lname;
+        cout << "Enter Account Name : ";
+        cin >> accountname;
+        cout << "Enter Password : ";
+        cin >> password;
 
+        // Hash the password before storing it
+        int hashedPassword = hashPassword(password);
+        passwordTable.insert(accountname, hashedPassword);
 
-    //nothing prints in login when no account is found in file;
-int login() {
-    int flag = 0;
-    string acc, pass;
-    cout<<endl;
-    cout << "Enter Account Name : ";
-    cin >> acc;
-    cout << "Enter Password : ";
-    cin >> pass;
+        do {
+            cout << "Enter your phone number (10 digits only): ";
+            cin >> phone;
+            if (phone.length() != 10) {
+                cout << "Invalid phone number. Please try again." << endl;
+            }
+        } while (phone.length() != 10);
 
-    fstream reader;
-    reader.open("Details", ios::in);
-    // checks the account at time of login and grants access if the vles matched
-    string check_accountname, check_password, check_fname, check_lname ,check_email;
-    string check_phone;
+        cout << "Enter your email id : ";
+        cin >> email;
 
-    while(reader >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email ) {
-        if (check_accountname == acc) {
-            flag = 1;
-            if (check_password == pass) {
+        ofstream writer("Details", ios::out | ios::app);
+        writer << accountname << " " << password << " " << fname << " " << lname << " " << phone << " " << email << "\n";
+        writer.close();
+
+        writer.open("Passwords",ios::out | ios::app);
+        writer<<accountname<<" "<< hashPassword(password)<<"\n";
+        writer.close();
+    }
+
+    int login() {
+        int flag = 0;
+        string acc, pass;
+        cout << endl;
+        cout << "Enter Account Name : ";
+        cin >> acc;
+        cout << "Enter Password : ";
+        cin >> pass;
+
+        int storedPassword = passwordTable.search(acc);
+
+        if (storedPassword != -1) {
+            // Hash the entered password for comparison
+            int hashedEnteredPassword = hashPassword(pass);
+
+            if (hashedEnteredPassword == storedPassword) {
                 cout << "Access Granted.\n" << endl;
-                accountname = check_accountname;
-                password = check_password;
-                fname = check_fname;
-                lname = check_lname;
-                phone = check_phone;
-                email = check_email;
-                reader.close();
+                accountname = acc;
+                password = pass;
                 return 1;
             } else {
                 cout << "Wrong Password\n" << endl;
             }
-            break;
-        }
-    }
-
-    if (flag == 0) {
-        cout << "Account not found.\n" << endl;
-        return -1;
-    }
-
-    reader.close();
-    return 0;
-}
-void deleteAccount() {
-    string accToDelete;
-    cout << "Enter the account name to delete: ";
-    cin >> accToDelete;
-
-    ifstream inFile("Details");
-    ofstream outFile("TempFile");
-
-    if (!inFile || !outFile) {
-        cout << "Error opening files.\n";
-        return;
-    }
-    //removes the account from the text file
-    string check_accountname, check_password, check_fname, check_lname, check_email, check_phone;
-
-    while (inFile >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email) {
-        if (check_accountname == accToDelete) {
-            // Skip the account to be deleted
-            continue;
+        } else {
+            cout << "Account not found. Please sign up.\n";
+            return -1;
         }
 
-        outFile << check_accountname << " " << check_password << " " << check_fname << " "
-                << check_lname << " " << check_phone << " " << check_email << "\n";
+        return 0;
     }
 
-    inFile.close();
-    outFile.close();
+    void deleteAccount() {
+        string accToDelete;
+        cout << "Enter the account name to delete: ";
+        cin >> accToDelete;
 
-    // Remove the original file and rename the temporary file
-    remove("Details");
-    rename("TempFile", "Details");
+        ifstream inFile("Details");
+        ofstream outFile("TempFile");
+        if (!inFile || !outFile) {
+            cout << "Error opening files.\n";
+            return;
+        }
+        string check_accountname, check_password, check_fname, check_lname, check_email, check_phone;
+        while (inFile >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email) {
+            if (check_accountname == accToDelete) {
+                // Skip the account to be deleted
+                continue;
+            }
+            outFile << check_accountname << " " << check_password << " " << check_fname << " "
+                    << check_lname << " " << check_phone << " " << check_email << "\n";
+        }
+        inFile.close();
+        outFile.close();
 
-    cout << "Account " << accToDelete << " deleted successfully.\n";
-}
+        // Remove the original file and rename the temporary file
+        remove("Details");
+        rename("TempFile", "Details");
 
+        // Remove the account from the hash table
+        passwordTable.search(accToDelete); 
+        // To remove from the hash table
+        inFile.open("Passwords");
+        outFile.open("TempFile");
+        if (!inFile || !outFile) {
+            cout << "Error opening files.\n";
+            return;
+        }
+        string check_acc, check_pass;
+        while (inFile >> check_acc >> check_pass ) {
+            if (check_acc == accToDelete) {
+                // Skip the account to be deleted
+                continue;
+            }
+            outFile << check_acc << " " << check_pass << "\n";
+        }
+        inFile.close();
+        outFile.close();
+
+        // Remove the original file and rename the temporary file
+        remove("Passwords");
+        rename("TempFile", "Passwords");
+
+        cout << "Account " << accToDelete << " deleted successfully.\n";
+    }
+
+private:
+    // Replace this function with a secure hashing algorithm in a real-world application
+    int hashPassword(const string& password) {
+        int hash = 0;
+        for (char ch : password) {
+            hash += static_cast<int>(ch);
+        }
+        return hash;
+    }
 };
 
+//flag
 struct Node {
     int data;
     Node *left;
