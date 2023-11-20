@@ -41,9 +41,24 @@ class category{
         cout<<"5.Exit\n"<<endl;
     }
     void showroutes(){
-        cout<<"\nRoutes & Buses\n\n";
-        cout<<"1.Bus 1 : Delhi--->Jaipur--->Udaipur"<<endl;
-        cout<<"2.Bus 2 : Delhi--->Punjab--->Chandigarh"<<endl;
+        cout << "Routes:\n";
+        cout << "BusNo    From       To    Duration(hr)    Fare(Rs)\n";
+        cout<<"1       delhi     manali       5            2300\n";
+        cout<<"2       mumbai     pune        7            4600\n";
+        cout<<"3      lucknow    meerut       6            1800\n";
+        cout<<"4       meerut    kanpur       5            2400\n";
+        cout<<"5       cochin   banglore      7            3000\n";
+        cout<<"6       indore     pune        10           2800\n";
+        cout<<"7       mumbai     pune        8            3300\n";
+        cout<<"8        pune     nagpur       4            2100\n";
+        cout<<"9       meerut     agra        5            2900\n";
+        cout<<"10      mumbai     pune        6            2400\n";
+        cout<<"11      meerut    kanpur       9            2350\n";
+        cout<<"12      delhi     meerut       5            2200\n";
+        cout<<"13      delhi     manali       7            2100\n";
+        cout<<"14     varanasi  ghaziabad     10           2200\n";
+        cout<<"15      nagpur     pune        5            2400\n";
+        
     }
     void contact(){
         cout<<"WELCOME TO SUPPORT ";
@@ -138,14 +153,16 @@ public:
 class accounts {
 private:
     HashTable passwordTable;
-    string accountname;
     string password;
+    
+
+public:
+    string accountname;
     string fname;
     string lname;
     string phone;
     string email;
 
-public:
     accounts(){
         ifstream reader("Passwords",ios::in);
         string account,pass;
@@ -154,6 +171,7 @@ public:
         }
         reader.close();
     }
+
     void signup() {
         cout << endl;
         cout << "Enter your firstname : ";
@@ -285,7 +303,7 @@ private:
     }
 };
 
-//flag
+
 struct Node {
     int data;
     Node *left;
@@ -784,7 +802,7 @@ class routes{
 
         string line;
         cout << "Routes:\n";
-        cout << "RouteNo     BusNo    From    To    Duration(hr)    Fare(Rs)\n";
+        cout << "BusNo    From    To    Duration(hr)    Fare(Rs)\n";
         while (getline(file, line)) {
             cout << line << "\n";
         }
@@ -832,117 +850,44 @@ void sortroutefare(int rn) {
 };
 
 
+void payment() {
+    int choice;
 
+        // Display menu options
+        cout << "\n#######payment window opening#######\n";
+        cout << "1. Bank Transfer\n";
+        cout << "2. UPI\n";
+        cout << "Enter your choice=";
+        cin >> choice;
 
-struct NODE {
-    int data;
-    NODE *next = NULL;
-
-    NODE(int x) {
-        data = x;
-    }
-};
-
-class queued {
-public:
-    NODE *head = NULL;
-
-    void enque(int x) {
-        NODE *newnode = new NODE(x);
-        if (head == NULL) {
-            head = newnode;
-            return;
-        }
-        newnode->next = head;
-        head = newnode;
-    }
-
-    void deque() {
-        if (head == NULL) {
-            cout << "Queue is empty.\n";
-            return;
-        }
-        NODE *temp = head;
-        head = head->next;
-        delete temp;
-    }
-
-    int front() {
-        if (head == NULL) {
-            cout << "Queue is empty.\n";
-            return -1;
-        }
-        return head->data;
-    }
-
-    bool isempty() {
-        return (head == NULL);
-    }
-
-    void display() {
-        NODE *curr = head;
-        while (curr != NULL) {
-            cout << curr->data << " ";
-            curr = curr->next;
-        }
-        cout << endl;
-    }
-};
-
-class payment {
-public:
-    void queuePayment(const string& firstname, const string& lastname, int busno, int seatno, const string& mobile, const string& email) {
-        ofstream writer("PaymentQueue.txt", ios::out | ios::app);
-        if (writer) {
-            writer << firstname << " " << lastname << " " << busno << " " << seatno << " " << mobile << " " << email << "\n";
-            writer.close();
-            cout << "Payment request queued successfully.\n";
-        } else {
-            cout << "Error opening 'PaymentQueue.txt' file for writing.\n";
-        }
-    }
-
-    void processPayments() {
-        ifstream reader("PaymentQueue.txt");
-        if (!reader) {
-            cout << "Error opening 'PaymentQueue.txt' file for reading.\n";
-            return;
-        }
-
-        queued paymentQueue;
-
-        string line;
-        while (getline(reader, line)) {
-            // Assuming the file format is "firstname lastname busno seatno mobile email"
-            string firstname, lastname, mobile, email;
-            int busno, seatno;
-
-            // Using stringstream to parse the line
-            stringstream ss(line);
-            if (ss >> firstname >> lastname >> busno >> seatno >> mobile >> email) {
-                // Enqueue payment request
-                paymentQueue.enque(seatno);  // Assuming seatno is used as the payment identifier
-            } else {
-                cout << "Error parsing line: " << line << "\n";
+        // Process user choice
+        if (choice==1){
+                cout << "Option 1: Bank Transfer selected.\n";
+                int x,y;
+                cout<<"enter bank acc no.=>\n";
+                cin>>x;
+                cout<<"enter pin=>\n";
+                cin>>y;
             }
+       else{
+                cout << "Option 2: UPI selected.\n";
+                int x,y;
+                cout<<"enter phone no.=>\n";
+                cin>>x;
+                cout<<"enter pin=>\n";
+                cin>>y;
         }
-
-        reader.close();
-
-        // Process payment requests from the queue
-        cout << "Processing payment requests...\n";
-        while (!paymentQueue.isempty()) {
-            int seatno = paymentQueue.front();
-            cout << "Processing payment for Seat Number: " << seatno << "\n";
-            // Add your payment processing logic here
-
-            // Dequeue processed payment request
-            paymentQueue.deque();
+        cout<<"amt to be paid=2300\n";
+        cout<<"confirm the payment(y/n)=>";
+        char t;
+        cin>> t;
+        if (t=='y' || t=='Y'){
+            cout<<"payment successful\n";
         }
-    }
-};
-
-
+        else{
+            cout<<"payment cancelled\n";
+        }
+}
 
 
 
@@ -950,6 +895,7 @@ public:
 int main(){
     cout<<"########## CABOOK ##########";
     category obj;
+    routes r;
     int choice,seatno,busno;
     accounts a;
     seats s;
@@ -968,7 +914,27 @@ int main(){
             cout<<"Access Denied."<<endl;
             goto l0;
         }
-        
+        while (1){
+        obj.admin_menu();
+        int c;
+        cout<<"\nenter the choice=>\n";
+        cin>>c;
+        if (c==1){
+            cout<<"seats are as follows=>\n";
+            s.viewBusBookings();
+        }
+        else if (c==2){
+            a.deleteAccount();
+        }
+
+        else if(c==3){
+            s.cancelBooking();
+        }
+
+        else {
+            break;
+        }
+        }
     }
     else if(choice==2){
         l1:
@@ -1014,10 +980,12 @@ int main(){
                 goto l4;        
             }
             s.book(busno,seatno);
+            payment();
+            goto l2;
 
         }
         else if(choice==3){
-            cout << "Account Details:\n";
+           cout << "Account Details:\n";
                     cout << "Name: " << a.fname << " " << a.lname << endl;
                     cout << "Account Name: " << a.accountname << endl;
                     cout << "Phone: " << a.phone << endl;
@@ -1043,5 +1011,3 @@ int main(){
 
     return 0;
 }
-
-
