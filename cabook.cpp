@@ -214,10 +214,9 @@ public:
         cout << "Enter Account Name : ";
         cin >> acc;
         cout << "Enter Password : ";
-        cin >> pass;
+        cin >> pass;        
 
         int storedPassword = passwordTable.search(acc);
-
         if (storedPassword != -1) {
             // Hash the entered password for comparison
             int hashedEnteredPassword = hashPassword(pass);
@@ -226,6 +225,17 @@ public:
                 cout << "Access Granted.\n" << endl;
                 accountname = acc;
                 password = pass;
+                ifstream reader("Details");
+                string check_accountname, check_password, check_fname, check_lname, check_email, check_phone;
+                while (reader >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email) {
+                    if (check_accountname == acc) {
+                        fname=check_fname;
+                        lname=check_lname;
+                        phone=check_phone;
+                        email=check_email;
+                        break;
+                    }       
+                }
                 return 1;
             } else {
                 cout << "Wrong Password\n" << endl;
@@ -289,7 +299,7 @@ public:
         remove("Passwords");
         rename("TempFile", "Passwords");
 
-        cout << "Account " << accToDelete << " deleted successfully.\n";
+        cout << "Account " << accToDelete << " Deleted successfully.Please run the code again to reflect changes.\n";
     }
 
 private:
