@@ -627,7 +627,7 @@ seats() {
             cout << "Invalid bus number. Please enter a number between 0 and 14." << endl;
             return;
         }
-        cout << "Booked Seats for Bus " << busNumber << ": ";
+        cout << "Booked Seats for Bus " << busNumber+1 << ": ";
         for (int i = 0; i < 30; i++) {
             if (busSeats[busNumber][i] == "1") {
                 cout << i + 1 << " ";
@@ -670,7 +670,7 @@ void cancelBooking() {
     cin >> busNumber;
 
     // Display booked seats for the specified bus
-    cout << "Booked Seats for Bus " << busNumber << ": ";
+    cout << "Booked Seats for Bus " << busNumber+1 << ": ";
     for (int i = 0; i < 30; i++) {
         if (busSeats[busNumber][i] == "1") {
             cout << i + 1 << " ";
