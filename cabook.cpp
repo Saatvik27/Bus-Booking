@@ -38,7 +38,8 @@ class category{
         cout<<"2.Book a seat"<<endl;
         cout<<"3.Your Account"<<endl;
         cout<<"4.Support"<<endl;
-        cout<<"5.Exit\n"<<endl;
+        cout<<"5.view boooking"<<endl;
+        cout<<"6.Exit\n"<<endl;
     }
     void showroutes(){
         cout << "Routes:\n";
@@ -151,166 +152,166 @@ public:
 };
 
 class accounts {
-private:
-    HashTable passwordTable;
-    string password;
-    
+    private:
+        HashTable passwordTable;
+        string password;
+        
 
-public:
-    string accountname;
-    string fname;
-    string lname;
-    string phone;
-    string email;
+    public:
+        string accountname;
+        string fname;
+        string lname;
+        string phone;
+        string email;
 
-    accounts(){
-        ifstream reader("Passwords",ios::in);
-        string account,pass;
-        while(reader>>account>>pass){
-            passwordTable.insert(account,stoi(pass));
-        }
-        reader.close();
-    }
-
-    void signup() {
-        cout << endl;
-        cout << "Enter your firstname : ";
-        cin >> fname;
-        cout << "Enter your lastname : ";
-        cin >> lname;
-        cout << "Enter Account Name : ";
-        cin >> accountname;
-        cout << "Enter Password : ";
-        cin >> password;
-
-        // Hash the password before storing it
-        int hashedPassword = hashPassword(password);
-        passwordTable.insert(accountname, hashedPassword);
-
-        do {
-            cout << "Enter your phone number (10 digits only): ";
-            cin >> phone;
-            if (phone.length() != 10) {
-                cout << "Invalid phone number. Please try again." << endl;
+        accounts(){
+            ifstream reader("Passwords",ios::in);
+            string account,pass;
+            while(reader>>account>>pass){
+                passwordTable.insert(account,stoi(pass));
             }
-        } while (phone.length() != 10);
+            reader.close();
+        }
 
-        cout << "Enter your email id : ";
-        cin >> email;
+        void signup() {
+            cout << endl;
+            cout << "Enter your firstname : ";
+            cin >> fname;
+            cout << "Enter your lastname : ";
+            cin >> lname;
+            cout << "Enter Account Name : ";
+            cin >> accountname;
+            cout << "Enter Password : ";
+            cin >> password;
 
-        ofstream writer("Details", ios::out | ios::app);
-        writer << accountname << " " << password << " " << fname << " " << lname << " " << phone << " " << email << "\n";
-        writer.close();
+            // Hash the password before storing it
+            int hashedPassword = hashPassword(password);
+            passwordTable.insert(accountname, hashedPassword);
 
-        writer.open("Passwords",ios::out | ios::app);
-        writer<<accountname<<" "<< hashPassword(password)<<"\n";
-        writer.close();
-    }
-
-    int login() {
-        int flag = 0;
-        string acc, pass;
-        cout << endl;
-        cout << "Enter Account Name : ";
-        cin >> acc;
-        cout << "Enter Password : ";
-        cin >> pass;        
-
-        int storedPassword = passwordTable.search(acc);
-        if (storedPassword != -1) {
-            // Hash the entered password for comparison
-            int hashedEnteredPassword = hashPassword(pass);
-
-            if (hashedEnteredPassword == storedPassword) {
-                cout << "Access Granted.\n" << endl;
-                accountname = acc;
-                password = pass;
-                ifstream reader("Details");
-                string check_accountname, check_password, check_fname, check_lname, check_email, check_phone;
-                while (reader >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email) {
-                    if (check_accountname == acc) {
-                        fname=check_fname;
-                        lname=check_lname;
-                        phone=check_phone;
-                        email=check_email;
-                        break;
-                    }       
+            do {
+                cout << "Enter your phone number (10 digits only): ";
+                cin >> phone;
+                if (phone.length() != 10) {
+                    cout << "Invalid phone number. Please try again." << endl;
                 }
-                return 1;
+            } while (phone.length() != 10);
+
+            cout << "Enter your email id : ";
+            cin >> email;
+
+            ofstream writer("Details", ios::out | ios::app);
+            writer << accountname << " " << password << " " << fname << " " << lname << " " << phone << " " << email << "\n";
+            writer.close();
+
+            writer.open("Passwords",ios::out | ios::app);
+            writer<<accountname<<" "<< hashPassword(password)<<"\n";
+            writer.close();
+        }
+
+        int login() {
+            int flag = 0;
+            string acc, pass;
+            cout << endl;
+            cout << "Enter Account Name : ";
+            cin >> acc;
+            cout << "Enter Password : ";
+            cin >> pass;        
+
+            int storedPassword = passwordTable.search(acc);
+            if (storedPassword != -1) {
+                // Hash the entered password for comparison
+                int hashedEnteredPassword = hashPassword(pass);
+
+                if (hashedEnteredPassword == storedPassword) {
+                    cout << "Access Granted.\n" << endl;
+                    accountname = acc;
+                    password = pass;
+                    ifstream reader("Details");
+                    string check_accountname, check_password, check_fname, check_lname, check_email, check_phone;
+                    while (reader >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email) {
+                        if (check_accountname == acc) {
+                            fname=check_fname;
+                            lname=check_lname;
+                            phone=check_phone;
+                            email=check_email;
+                            break;
+                        }       
+                    }
+                    return 1;
+                } else {
+                    cout << "Wrong Password\n" << endl;
+                }
             } else {
-                cout << "Wrong Password\n" << endl;
+                cout << "Account not found. Please sign up.\n";
+                return -1;
             }
-        } else {
-            cout << "Account not found. Please sign up.\n";
-            return -1;
+
+            return 0;
         }
 
-        return 0;
-    }
+        void deleteAccount() {
+            string accToDelete;
+            cout << "Enter the account name to delete: ";
+            cin >> accToDelete;
 
-    void deleteAccount() {
-        string accToDelete;
-        cout << "Enter the account name to delete: ";
-        cin >> accToDelete;
-
-        ifstream inFile("Details");
-        ofstream outFile("TempFile");
-        if (!inFile || !outFile) {
-            cout << "Error opening files.\n";
-            return;
-        }
-        string check_accountname, check_password, check_fname, check_lname, check_email, check_phone;
-        while (inFile >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email) {
-            if (check_accountname == accToDelete) {
-                // Skip the account to be deleted
-                continue;
+            ifstream inFile("Details");
+            ofstream outFile("TempFile");
+            if (!inFile || !outFile) {
+                cout << "Error opening files.\n";
+                return;
             }
-            outFile << check_accountname << " " << check_password << " " << check_fname << " "
-                    << check_lname << " " << check_phone << " " << check_email << "\n";
-        }
-        inFile.close();
-        outFile.close();
-
-        // Remove the original file and rename the temporary file
-        remove("Details");
-        rename("TempFile", "Details");
-
-        // Remove the account from the hash table
-        passwordTable.search(accToDelete); 
-        // To remove from the hash table
-        inFile.open("Passwords");
-        outFile.open("TempFile");
-        if (!inFile || !outFile) {
-            cout << "Error opening files.\n";
-            return;
-        }
-        string check_acc, check_pass;
-        while (inFile >> check_acc >> check_pass ) {
-            if (check_acc == accToDelete) {
-                // Skip the account to be deleted
-                continue;
+            string check_accountname, check_password, check_fname, check_lname, check_email, check_phone;
+            while (inFile >> check_accountname >> check_password >> check_fname >> check_lname >> check_phone >> check_email) {
+                if (check_accountname == accToDelete) {
+                    // Skip the account to be deleted
+                    continue;
+                }
+                outFile << check_accountname << " " << check_password << " " << check_fname << " "
+                        << check_lname << " " << check_phone << " " << check_email << "\n";
             }
-            outFile << check_acc << " " << check_pass << "\n";
+            inFile.close();
+            outFile.close();
+
+            // Remove the original file and rename the temporary file
+            remove("Details");
+            rename("TempFile", "Details");
+
+            // Remove the account from the hash table
+            passwordTable.search(accToDelete); 
+            // To remove from the hash table
+            inFile.open("Passwords");
+            outFile.open("TempFile");
+            if (!inFile || !outFile) {
+                cout << "Error opening files.\n";
+                return;
+            }
+            string check_acc, check_pass;
+            while (inFile >> check_acc >> check_pass ) {
+                if (check_acc == accToDelete) {
+                    // Skip the account to be deleted
+                    continue;
+                }
+                outFile << check_acc << " " << check_pass << "\n";
+            }
+            inFile.close();
+            outFile.close();
+
+            // Remove the original file and rename the temporary file
+            remove("Passwords");
+            rename("TempFile", "Passwords");
+
+            cout << "Account " << accToDelete << " Deleted successfully.Please run the code again to reflect changes.\n";
         }
-        inFile.close();
-        outFile.close();
 
-        // Remove the original file and rename the temporary file
-        remove("Passwords");
-        rename("TempFile", "Passwords");
-
-        cout << "Account " << accToDelete << " Deleted successfully.Please run the code again to reflect changes.\n";
-    }
-
-private:
-    // Replace this function with a secure hashing algorithm in a real-world application
-    int hashPassword(const string& password) {
-        int hash = 0;
-        for (char ch : password) {
-            hash += static_cast<int>(ch);
+    private:
+        // Replace this function with a secure hashing algorithm in a real-world application
+        int hashPassword(const string& password) {
+            int hash = 0;
+            for (char ch : password) {
+                hash += static_cast<int>(ch);
+            }
+            return hash;
         }
-        return hash;
-    }
 };
 
 
@@ -563,70 +564,114 @@ int generateid() {
 
         reader.close();
     }
+
 };
 
 class seats {
-public:
-    string busSeats[15][30];
+    public:
+        string busSeats[15][30];
 
-// Constructor to initialize seat data from a file
-seats() {
-    ifstream reader("Bus_Seats");
+    // Constructor to initialize seat data from a file
+    seats() {
+        ifstream reader("Bus_Seats");
 
-    if (!reader) {
-        cout << "The file 'Bus_Seats' does not exist or cannot be opened. Creating a new seat data file." << endl;
+        if (!reader) {
+            cout << "The file 'Bus_Seats' does not exist or cannot be opened. Creating a new seat data file." << endl;
 
-        // Create a new seat data file with initial values (assuming all seats are initially available)
-        ofstream writer("Bus_Seats");
-        if (writer) {
+            // Create a new seat data file with initial values (assuming all seats are initially available)
+            ofstream writer("Bus_Seats");
+            if (writer) {
+                for (int i = 0; i < 15; i++) {
+                    for (int j = 0; j < 30; j++) {
+                        writer << "0 "; // Assuming '0' means the seat is available
+                    }
+                    writer << endl;
+                }
+                writer.close();
+            } else {
+                cout << "Error creating a new seat data file. Please check file permissions." << endl;
+            }
+        } else {
+            // File exists, so read seat data
             for (int i = 0; i < 15; i++) {
                 for (int j = 0; j < 30; j++) {
-                    writer << "0 "; // Assuming '0' means the seat is available
+                    reader >> busSeats[i][j];
                 }
-                writer << endl;
             }
-            writer.close();
-        } else {
-            cout << "Error creating a new seat data file. Please check file permissions." << endl;
+            reader.close();
         }
-    } else {
-        // File exists, so read seat data
+    }
+
+        // Book a seat on a specific bus by bus number (0-14) and seat number (1-30)
+        bool book(int busNumber, int seatNumber) {
+            if (busNumber < 0 || busNumber >= 15) {
+                cout << "Invalid bus number. Please enter a number between 0 and 14." << endl;
+                return false;
+            }
+            if (seatNumber < 1 || seatNumber > 30) {
+                cout << "Invalid seat number. Please enter a number between 1 and 30." << endl;
+                return false;
+            }
+            if (busSeats[busNumber-1][seatNumber - 1] == "0") {
+                busSeats[busNumber-1][seatNumber - 1] = "1"; // Mark the seat as booked
+                updateSeatsFile();
+                cout << "Seat " << seatNumber << " on Bus " << busNumber << " booked successfully." << endl;
+                return true;
+            } else {
+                cout << "Seat " << seatNumber << " on Bus " << busNumber << " is already booked." << endl;
+                return false;
+            }
+        }
+
+        // Display booked seats for a specific bus
+        void booked(int busNumber) {
+            if (busNumber < 0 || busNumber >= 15) {
+                cout << "Invalid bus number. Please enter a number between 0 and 14." << endl;
+                return;
+            }
+            cout << "Booked Seats for Bus " << busNumber+1 << ": ";
+            for (int i = 0; i < 30; i++) {
+                if (busSeats[busNumber][i] == "1") {
+                    cout << i + 1 << " ";
+                }
+            }
+            cout << endl;
+        }
+
+        // Display available seats for a specific bus
+        void available(int busNumber) {
+            if (busNumber < 0 || busNumber >= 15) {
+                cout << "Invalid bus number. Please enter a number between 0 and 14." << endl;
+                return;
+            }
+            cout << "Available Seats for Bus " << busNumber << ": ";
+            for (int i = 0; i < 30; i++) {
+                if (busSeats[busNumber][i] == "0") {
+                    cout << i + 1 << " ";
+                }
+            }
+            cout << endl;
+        }
+
+    void viewBusBookings() {
+        // Display booked seats for all buses
         for (int i = 0; i < 15; i++) {
+            cout << "Booked Seats for Bus " << i+1 << ": ";
             for (int j = 0; j < 30; j++) {
-                reader >> busSeats[i][j];
+                if (busSeats[i][j] == "1") {
+                    cout << j + 1 << " ";
+                }
             }
-        }
-        reader.close();
-    }
-}
-
-    // Book a seat on a specific bus by bus number (0-14) and seat number (1-30)
-    bool book(int busNumber, int seatNumber) {
-        if (busNumber < 0 || busNumber >= 15) {
-            cout << "Invalid bus number. Please enter a number between 0 and 14." << endl;
-            return false;
-        }
-        if (seatNumber < 1 || seatNumber > 30) {
-            cout << "Invalid seat number. Please enter a number between 1 and 30." << endl;
-            return false;
-        }
-        if (busSeats[busNumber-1][seatNumber - 1] == "0") {
-            busSeats[busNumber-1][seatNumber - 1] = "1"; // Mark the seat as booked
-            updateSeatsFile();
-            cout << "Seat " << seatNumber << " on Bus " << busNumber << " booked successfully." << endl;
-            return true;
-        } else {
-            cout << "Seat " << seatNumber << " on Bus " << busNumber << " is already booked." << endl;
-            return false;
+            cout << endl;
         }
     }
 
-    // Display booked seats for a specific bus
-    void booked(int busNumber) {
-        if (busNumber < 0 || busNumber >= 15) {
-            cout << "Invalid bus number. Please enter a number between 0 and 14." << endl;
-            return;
-        }
+    void cancelBooking() {
+        int busNumber, seatNumber;
+        cout << "Enter bus number: ";
+        cin >> busNumber;
+
+        // Display booked seats for the specified bus
         cout << "Booked Seats for Bus " << busNumber+1 << ": ";
         for (int i = 0; i < 30; i++) {
             if (busSeats[busNumber][i] == "1") {
@@ -634,80 +679,37 @@ seats() {
             }
         }
         cout << endl;
-    }
 
-    // Display available seats for a specific bus
-    void available(int busNumber) {
-        if (busNumber < 0 || busNumber >= 15) {
-            cout << "Invalid bus number. Please enter a number between 0 and 14." << endl;
-            return;
-        }
-        cout << "Available Seats for Bus " << busNumber << ": ";
-        for (int i = 0; i < 30; i++) {
-            if (busSeats[busNumber][i] == "0") {
-                cout << i + 1 << " ";
+        cout << "Enter seat number to cancel booking: ";
+        cin >> seatNumber;
+
+        // Code to cancel booking for the specified seat on the specified bus
+        if (seatNumber >= 1 && seatNumber <= 30) {
+            if (busSeats[busNumber][seatNumber - 1] == "1") {
+                busSeats[busNumber][seatNumber - 1] = "0"; // Mark the seat as available
+                updateSeatsFile();
+                cout << "Booking for Seat " << seatNumber << " on Bus " << busNumber << " canceled successfully.\n";
+            } else {
+                cout << "Seat " << seatNumber << " on Bus " << busNumber << " is not booked.\n";
             }
-        }
-        cout << endl;
-    }
-
-void viewBusBookings() {
-    // Display booked seats for all buses
-    for (int i = 0; i < 15; i++) {
-        cout << "Booked Seats for Bus " << i+1 << ": ";
-        for (int j = 0; j < 30; j++) {
-            if (busSeats[i][j] == "1") {
-                cout << j + 1 << " ";
-            }
-        }
-        cout << endl;
-    }
-}
-
-void cancelBooking() {
-    int busNumber, seatNumber;
-    cout << "Enter bus number: ";
-    cin >> busNumber;
-
-    // Display booked seats for the specified bus
-    cout << "Booked Seats for Bus " << busNumber+1 << ": ";
-    for (int i = 0; i < 30; i++) {
-        if (busSeats[busNumber][i] == "1") {
-            cout << i + 1 << " ";
-        }
-    }
-    cout << endl;
-
-    cout << "Enter seat number to cancel booking: ";
-    cin >> seatNumber;
-
-    // Code to cancel booking for the specified seat on the specified bus
-    if (seatNumber >= 1 && seatNumber <= 30) {
-        if (busSeats[busNumber][seatNumber - 1] == "1") {
-            busSeats[busNumber][seatNumber - 1] = "0"; // Mark the seat as available
-            updateSeatsFile();
-            cout << "Booking for Seat " << seatNumber << " on Bus " << busNumber << " canceled successfully.\n";
         } else {
-            cout << "Seat " << seatNumber << " on Bus " << busNumber << " is not booked.\n";
+            cout << "Invalid seat number. Please enter a number between 1 and 30.\n";
         }
-    } else {
-        cout << "Invalid seat number. Please enter a number between 1 and 30.\n";
     }
-}
 
-private:
-    // Update the seat information in the file
-    void updateSeatsFile() {
-        ofstream writer("Bus_Seats");
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 30; j++) {
-                writer << busSeats[i][j] << " ";
+    private:
+        // Update the seat information in the file
+        void updateSeatsFile() {
+            ofstream writer("Bus_Seats");
+            for (int i = 0; i < 15; i++) {
+                for (int j = 0; j < 30; j++) {
+                    writer << busSeats[i][j] << " ";
+                }
+                writer << endl;
             }
-            writer << endl;
+            writer.close();
         }
-        writer.close();
-    }
-};
+    };
 class Linkedlist {
     node* head;
     public:
@@ -906,6 +908,7 @@ int main(){
     cout<<"########## CABOOK ##########";
     category obj;
     routes r;
+    book b;
     int choice,seatno,busno;
     accounts a;
     seats s;
@@ -990,6 +993,7 @@ int main(){
                 goto l4;        
             }
             s.book(busno,seatno);
+            b.makeBooking(b.generateid(),a.fname,busno,seatno);
             payment();
             goto l2;
 
@@ -1006,7 +1010,13 @@ int main(){
             obj.contact();
             goto l2;
         }
+        
         else if(choice==5){
+            b.viewBookings(a.accountname);
+            goto l2;
+        }
+        
+        else if(choice==6){
             return 0;
         }
         else{
