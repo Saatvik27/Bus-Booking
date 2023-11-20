@@ -38,7 +38,7 @@ class category{
         cout<<"2.Book a seat"<<endl;
         cout<<"3.Your Account"<<endl;
         cout<<"4.Support"<<endl;
-        cout<<"5.view boooking"<<endl;
+        cout<<"5.view booking"<<endl;
         cout<<"6.sort routes"<<endl;
         cout<<"7.Exit\n"<<endl;
     }
@@ -256,6 +256,7 @@ class accounts {
                     return 1;
                 } else {
                     cout << "Wrong Password\n" << endl;
+                    return -1;
                 }
             } else {
                 cout << "Account not found. Please sign up.\n";
@@ -340,13 +341,29 @@ struct Node {
         data = d;
         left = right = NULL;
         height = 1;
-        }
+    }
 };
 
 class BinaryTree {
 public:
     Node *root;
-//binary tree class with all the functions 
+
+ BinaryTree() : root(nullptr) {
+    ifstream file("Booking_ids");
+
+    if (!file.is_open()) {
+        cerr << "Error opening file " << endl;
+        return;
+    }
+
+    int id;
+    while (file >> id) {
+        root = insert(root, id);
+    }
+
+    file.close();
+}
+
     int getHeight(Node *node) {
         if (node == nullptr)
             return 0;
@@ -418,144 +435,69 @@ public:
         else if (data > node->data)
             node->right = insert(node->right, data);
 
-        node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
+        node->height = 1 + max(getHeight(node->left), getHeight(node->right));
         return balanceTree(node, data);
     }
 
-    Node *maxNode(Node *node) {
-        if (node->right == nullptr) {
-            return node;
-        }
-        return maxNode(node->right);
-    }
+    void inorderTraversal(Node *node, ifstream& reader, const string& accountName) {
+    if (node) {
+        inorderTraversal(node->left, reader, accountName);
 
-    Node *deleteNode(Node *node, int x) {
-        if (node == nullptr)
-            return node;
-
-        if (x < node->data) {
-            node->left = deleteNode(node->left, x);
-        } else if (x > node->data) {
-            node->right = deleteNode(node->right, x);
-        } else {
-            if (node->left == nullptr || node->right == nullptr) {
-                Node *temp = node->left ? node->left : node->right;
-
-                if (temp == nullptr) {
-                    temp = node;
-                    node = nullptr;
-                } else {
-                    *node = *temp;
+        // Display the booking information for the specified account name
+        if (reader) {
+            string id, name, date, bus, seat;
+            while (reader >> id >> name >> date >> bus >> seat) {
+                if (name == accountName) {
+                    cout << id << " " << name << " " << date << " " << bus << " " << seat << endl;
                 }
-
-                delete temp;
-            } else {
-                Node *temp = maxNode(node->left);
-                node->data = temp->data;
-                node->left = deleteNode(node->left, temp->data);
             }
-        }
+        } 
 
-        if (node == nullptr)
-            return node;
-
-        node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
-        return balanceTree(node, x);
+        inorderTraversal(node->right, reader, accountName);
     }
-
-    void inorderTraversal(Node *node) {
-        if (node) {
-            inorderTraversal(node->left);
-            cout << node->data << " ";
-            inorderTraversal(node->right);
-        }
-    }
-    void readFromFile(const string& filename) {
-        ifstream file(filename);
-
-        if (!file.is_open()) {
-            cerr << "Error opening file " << filename << endl;
-            return;
-        }
-
-        int id;
-        while (file >> id) {
-            root = insert(root, id);
-        }
-
-        file.close();
-    }
-    void writeIntoFile(Node* node, ofstream& file) {
-        if (node) {
-            writeIntoFile(node->left, file);
-            file << node->data << " ";
-            writeIntoFile(node->right, file);
-        }
-    }
-
-    void writeToFile(const string& filename) {
-        ofstream file(filename);
-        if (!file.is_open()) {
-            cerr << "Error opening file " << filename << " for writing.\n";
-            return;
-        }
-
-        writeIntoFile(root, file);
-
-        file.close();
-        cout << "Data written to file successfully.\n";
-    }
-    Node *getmaxnode(Node *node){
-        if(node==NULL){
-            return node;
-        }
-        if(node->right==NULL){
-            return node;
-        }
-        return (node->right);
-    }
+}
 };
-
-
 
 class book {
 public:
-int generateid() {
-    int id;
-    ifstream file("Booking_ids");
+    BinaryTree bookingTree;  // Create an instance of BinaryTree
 
-    if (!file.is_open()) {
-        cerr << "Error opening file!" << std::endl;
-        return -1;
+    int generateid() {
+        int id;
+        ifstream file("Booking_ids");
+
+        if (!file.is_open()) {
+            cerr << "Error opening file!" << endl;
+            return -1;
+        }
+
+        // Read the last ID from the file
+        while (file >> id) {
+            // Keep reading until the last ID is obtained
+            bookingTree.root = bookingTree.insert(bookingTree.root, id + 1);
+        }
+
+        // Increment the last ID to generate a new one
+        id++;
+
+        // Append the new ID to the file
+        ofstream outFile("Booking_ids", ios::app);
+        outFile << id << endl;
+
+        file.close();
+        outFile.close();
+
+        return id;
     }
 
-    // Read the last ID from the file
-    while (file >> id) {
-        // Keep reading until the last ID is obtained
-    }
-
-    // Increment the last ID to generate a new one
-    id++;
-
-    // Append the new ID to the file
-    ofstream outFile("Booking_ids", ios::app);
-    outFile << id << endl;
-
-    file.close();
-    outFile.close();
-
-    return id;
-}
-
-
-    void makeBooking(int id,string Name, int busNumber, int seatNumber) {
+    void makeBooking(int id, string Name, int busNumber, int seatNumber) {
         ofstream writer("Bookings", ios::out | ios::app);
         if (writer) {
             time_t now = time(0);
             tm *ltm = localtime(&now);
-//provides confirmation of the booking along with  the important information
 
-            writer << id <<" "<< Name << " "<<ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << " "<< busNumber << " " << seatNumber << "\n";
+            // Provides confirmation of the booking along with the important information
+            writer << id << " " << Name << " " << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << " " << busNumber << " " << seatNumber << "\n";
             writer.close();
             cout << "Booking successful.\n";
         } else {
@@ -564,24 +506,16 @@ int generateid() {
     }
 
     void viewBookings(string accountName) {
-    // 
         ifstream reader("Bookings");
         if (!reader) {
             cout << "Error opening 'Bookings' file for reading.\n";
             return;
         }
 
-        string id,name,date,bus,seat;
-        while (reader>>id>>name>>date>>bus>>seat) {
-            if (name==accountName) {
-                // Display the booking information for the user
-                cout << id<<" " << name<<" " << date<<" "<<bus <<" "<<seat<< endl;
-            }
-        }
+        bookingTree.inorderTraversal(bookingTree.root, reader,accountName);
 
         reader.close();
     }
-
 };
 
 class seats {
