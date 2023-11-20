@@ -54,12 +54,12 @@ class category{
         cout<<"      7       7       mumbai     pune        8            3300\n";
         cout<<"      8       8        pune     nagpur       4            2100\n";
         cout<<"      9       9       meerut     agra        5            2900\n";
-        cout<<"      10       10      mumbai     pune        6            2400\n";
-        cout<<"      11       11      meerut    kanpur       9            2350\n";
-        cout<<"      12       12      delhi     meerut       5            2200\n";
-        cout<<"      13       13      delhi     manali       7            2100\n";
-        cout<<"      14       14     varanasi  ghaziabad     10           2200\n";
-        cout<<"      15       15      nagpur     pune        5            2400\n";
+        cout<<"      10      10      mumbai     pune        6            2400\n";
+        cout<<"      11      11      meerut    kanpur       9            2350\n";
+        cout<<"      12      12      delhi     meerut       5            2200\n";
+        cout<<"      13      13      delhi     manali       7            2100\n";
+        cout<<"      14      14     varanasi  ghaziabad     10           2200\n";
+        cout<<"      15      15      nagpur     pune        5            2400\n";
         cout<<"      16      1       delhi     manali       5            2300\n";
         cout<<"      17      2       mumbai     pune        7            4600\n";
         cout<<"      18      3      lucknow    meerut       6            1800\n";
