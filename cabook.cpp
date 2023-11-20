@@ -654,7 +654,7 @@ seats() {
 void viewBusBookings() {
     // Display booked seats for all buses
     for (int i = 0; i < 15; i++) {
-        cout << "Booked Seats for Bus " << i << ": ";
+        cout << "Booked Seats for Bus " << i+1 << ": ";
         for (int j = 0; j < 30; j++) {
             if (busSeats[i][j] == "1") {
                 cout << j + 1 << " ";
