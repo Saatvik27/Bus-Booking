@@ -992,6 +992,7 @@ int main(){
         else if(choice==6){
             cout<<"1. sort by distance"<<endl<<"2. sort by price"<<endl;
             int ch,rno;
+            cout<<"Enter option :";
             cin>>ch;
             cout<<"enter route no=>";
             cin>>rno;
