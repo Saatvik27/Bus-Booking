@@ -817,6 +817,7 @@ void payment(int busnumber) {
     int choice;
 
     // Display menu options
+    l10:
     cout << "\n#######payment window opening#######\n";
     cout << "1. Bank Transfer\n";
     cout << "2. UPI\n";
@@ -836,7 +837,7 @@ void payment(int busnumber) {
         cin >> z;
         cout << "Enter date=>\n";
         cin >> d;
-    } else {
+    } else if(choice==2) {
         cout << "Option 2: UPI selected.\n";
         string x;
         cout << "Enter phone no.=>\n";
@@ -845,6 +846,10 @@ void payment(int busnumber) {
             cout << "Phone number length should be 10 digits.\n";
             return;
         }
+    }
+    else{
+        cout<<"Enter valid option\n";
+        goto l10;
     }
 
     ifstream reader("routes");
